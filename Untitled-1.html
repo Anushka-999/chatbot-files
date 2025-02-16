@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOM Chatbot</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            margin: 0;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .top-bar {
+            width: 100%;
+            background: black;
+    	    padding: 15px 20px; /* Add horizontal padding */
+            display: flex;
+            justify-content: flex-end; /* Keep the button on the right */
+            align-items: center;
+            overflow: visible; /* Ensure the button isn't cut off */
+            box-sizing: border-box;
+        }
+
+        .top-bar button {
+            background: #ff0000; /* Brighter red */
+            color: white;
+            border: 2px solid white; /* Makes it pop */
+            padding: 12px 20px; /* Increase padding */
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px; /* Increase text size */
+            box-shadow: 0px 4px 8px rgba(255, 0, 0, 0.6); /* Add a shadow */
+            transition: all 0.3s ease-in-out;
+            max-width: 100%; /* Prevents overflow */
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            grid-template-rows: auto 1fr;
+            gap: 15px;
+            flex-grow: 1;
+            width: 100%;
+            overflow: hidden;
+            padding: 10px;
+        }
+        .left-panel {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 75vh;
+            border-radius: 10px;
+        }
+        .guidebook {
+            background: white;
+            color: black;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+        .chat-window {
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 65vh;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .chat-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .chat-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .chat-input {
+            display: flex;
+            align-items: center;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .chat-input button {
+            background: #ff416c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .bottom-bar {
+            background: linear-gradient(45deg, #9b51e0, #5b2c6f);
+            padding: 15px;
+            text-align: left;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .bottom-bar h2 {
+            margin-left: 10px;
+            font-size: 18px;
+            color: white;
+        }
+        .bottom-bar button {
+            background: white;
+            color: #5b2c6f;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .overlay-content {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+            text-align: center;
+        }
+        .page-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <button onclick="showEmergencyContacts()">Emergency Contacts</button>
+    </div>
+    <div class="container">
+        <div class="left-panel">
+            <h2>Guidebooks</h2>
+            <div class="guidebook" onclick="openBook(1)">First Aid</div>
+            <div class="guidebook" onclick="openBook(2)">Menstruation</div>
+            <div class="guidebook" onclick="openBook(3)">Pregnancy & Postpartum</div>
+            <div class="guidebook" onclick="openBook(4)">Infants & Children</div>
+            <div class="guidebook" onclick="openBook(5)">Allergies & Reaction</div>
+            <div class="guidebook" onclick="openBook(6)">Mental Wellness</div>
+            <div class="guidebook" onclick="openBook(7)">Sexual Wellness</div>
+        </div>
+        <div class="chat-window">
+            <div class="chat-header">MOM Chatbot</div>
+            <div class="chat-content" id="chat-content"></div>
+            <div class="chat-input">
+                <input type="text" id="user-input" placeholder="Ask me anything...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+    <div class="bottom-bar">
+        <h2>Home Remedies Miracles</h2>
+        <button onclick="openOverlay(1)">Hair Masks</button>
+        <button onclick="openOverlay(2)">Face Masks</button>
+        <button onclick="openOverlay(3)">Oils</button>
+        <button onclick="openOverlay(4)">Teas</button>
+        <button onclick="openOverlay(5)">Juices</button>
+        <button onclick="openOverlay(6)">Churans</button>
+        <button onclick="openOverlay(7)">Weight Management</button>
+        <button onclick="openOverlay(8)">Miracle Asanas</button>
+        <button onclick="openOverlay(9)">Superhero Foods</button>
+        <button onclick="openOverlay(10)">Medicinal Plants</button>
+    </div>
+    <div class="overlay" id="overlay">
+        <div class="overlay-content">
+            <h2>Home Remedy Details</h2>
+            <p id="remedy-text">This is where the selected remedy details will appear.</p>
+            <button onclick="closeOverlay()">Close</button>
+        </div>
+    </div>
+    <div class="overlay" id="book-overlay">
+        <div class="overlay-content">
+            <h2>Guidebook Details</h2>
+            <p id="book-text">This is where the selected guidebook details will appear.</p>
+            <div class="page-navigation">
+                <button onclick="navigateBook(-1)">Previous</button>
+                <button onclick="navigateBook(1)">Next</button>
+            </div>
+            <button onclick="closeBook()">Close</button>
+        </div>
+    </div>
+    <script>
+        let currentBookPage = 1;
+
+        function showEmergencyContacts() {
+            alert("Emergency Contacts:\n1. Police: 911\n2. Fire: 911\n3. Ambulance: 911");
+        }
+
+        function openOverlay(remedyNumber) {
+            document.getElementById('remedy-text').innerText = 'Details of Remedy ' + remedyNumber;
+            document.getElementById('overlay').style.display = 'flex';
+        }
+
+        function closeOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function openBook(bookNumber) {
+            currentBookPage = 1; // Reset to the first page when a new book is opened
+            document.getElementById('book-text').innerText = 'Guidebook ' + bookNumber + ' - Page ' + currentBookPage;
+            document.getElementById('book-overlay').style.display = 'flex';
+        }
+
+        function closeBook() {
+            document.getElementById('book-overlay').style.display = 'none';
+        }
+
+        function navigateBook(direction) {
+            currentBookPage += direction;
+            document.getElementById('book-text').innerText = 'Guidebook - Page ' + currentBookPage;
+        }
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const chatContent = document.getElementById('chat-content');
+            
+            if (userInput.value.trim() !== "") {
+                const userMessage = document.createElement('div');
+                userMessage.textContent = "You: " + userInput.value;
+                chatContent.appendChild(userMessage);
+                // Simulate a bot response
+                const botMessage = document.createElement('div');
+                botMessage.textContent = "Bot: This is a simulated response.";
+                chatContent.appendChild(botMessage);
+                
+                userInput.value = ""; // Clear the input box
+                chatContent.scrollTop = chatContent.scrollHeight; // Scroll to the bottom
+            }
+        }
+    </script>
+</body>
+</html>
